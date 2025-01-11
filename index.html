@@ -1,0 +1,177 @@
+<html>
+    <head>
+        <title>My todo wesbite!</title>
+        <style>
+            .modal {
+                display: none; 
+                position: fixed; 
+                z-index: 1; 
+                padding-top: 100px; 
+                left: 0;
+                top: 0;
+                width: 100%; 
+                height: 100%; 
+                overflow: auto; 
+                background-color: rgb(0,0,0); 
+                background-color: rgba(0,0,0,0.4); 
+                }
+            .modal-content {
+                background-color: #fefefe;
+                margin: auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+            }
+            .close {
+                color: #aaaaaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        </style>
+        <script>
+            function clearTodosView(){document.getElementById('allTodos').innerHTML="";}
+
+            function getAllTodos(){
+                fetch("http://localhost:3000/todos", {method:"GET"}).then((resp) => {
+                        resp.json().then((parsedResponse) => {
+                            var divElement = document.getElementById('allTodos');
+                            parsedResponse.forEach((todo) => {
+                                var newTodo = document.createElement("div");
+                                newTodo.innerHTML=`<lable style='size:10px;'><strong>` + todo.title + `</strong></lable> <p>` + todo.description +` 
+                                                    </p><button style="margin-top:10px;background-color: blue;color:white;" onclick="loadTodo(`+ todo.id +`)">Edit</button>
+                                                    <button onclick=deleteTodo(` + todo.id +`) style="margin-top:10px;background-color: red;color:white;">Delete</button>`
+                                divElement.appendChild(newTodo);
+                                divElement.appendChild(document.createElement("br"));
+                            })
+                        })
+                    })
+                }
+            
+            function updateTodos(){
+                clearTodosView();
+                getAllTodos();
+            }
+            
+            function deleteTodo(todoId){
+                fetch("http://localhost:3000/todos/"+todoId, {method:"DELETE"}).then((resp) => {
+                        resp.json().then((parsedResponse) => {
+                        // console.log(parsedResponse)
+                        updateTodos();
+                    })
+
+                })
+                
+            }
+
+            function addTodo(){
+                var todotitleInputBox = document.getElementById('titleInput');
+                var tododescriptionInputBox = document.getElementById('descriptionInput');
+
+                var title = todotitleInputBox.value;
+                var description = tododescriptionInputBox.value;
+
+                var options = {
+                    method:"POST",
+                    body: JSON.stringify({
+                        title,
+                        description
+                    }),
+                    headers: {
+                        "Content-Type":"application/json"
+                    }
+                }
+
+                fetch("http://localhost:3000/todos", options).then((resp) => {
+                    resp.json().then((parsedResponse) => {
+                        // console.log(parsedResponse);
+                        updateTodos();
+                        todotitleInputBox.value = "";
+                        tododescriptionInputBox.value = "";
+                    })
+                })
+            }
+
+            function loadTodo(todoId){
+                var updateTodoId = document.getElementById('editTodoId')
+                var editTodoTitleElement = document.getElementById('edittitleInput')
+                var editTodoDescriptionElement = document.getElementById('editdescriptionInput')
+                
+                fetch("http://localhost:3000/todos/" + todoId, {method:"GET"}).then((response) => {
+                    response.json().then((parsedResponse) => {
+                        // console.log(parsedResponse);
+                        updateTodoId.value = todoId;
+                        editTodoTitleElement.value = parsedResponse.title;
+                        editTodoDescriptionElement.value = parsedResponse.description;
+                        document.getElementById('myModal').style.display='block';
+
+                    })
+                })
+
+                
+            }
+            
+            function editTodo(){
+                var updateTodoId = document.getElementById('editTodoId').value;
+                var updatedTitle = document.getElementById('edittitleInput').value;
+                var updatedDescription = document.getElementById('editdescriptionInput').value;
+
+                fetch("http://localhost:3000/todos/" + updateTodoId, {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        title: updatedTitle,
+                        description: updatedDescription
+                    }),
+                    headers: {
+                        "Content-Type":"application/json"
+                    }
+                }).then((response) => {
+                    response.json().then((parsedResponse) => {
+                        document.getElementById('myModal').style.display='none';
+                        // console.log(response);
+                        updateTodos();
+                    })
+                })
+            }
+            
+            getAllTodos();
+            
+
+        </script>
+    </head>
+    <body>
+        <div style="padding: 5px;display: flex;width: fit-content;flex-direction: column;margin: 5px;/* align-content: center; */">
+                <label style="margin-top:10px;">Title</label>
+                <input name="title" type="text" id="titleInput"/>
+                <label style="margin-top:10px;">Description</label>
+                <input name="description" type="text" id="descriptionInput"/>
+                <button style="margin-top:10px;background-color: aquamarine;color:black;" onclick="addTodo()">Add Todo</button>
+        </div>
+        <div style="padding-top: 20px;">
+            <h1>Todos</h1>
+            <div id="allTodos">
+                
+            </div>
+        </div>
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+              <span onclick="document.getElementById('myModal').style.display='none'" class="close">&times;</span>
+              <p style="text-align: center;">Edit Todo</p>
+              <input type="hidden" id="editTodoId" value="-1"/>
+              <label style="margin-top:10px;">Title</label>
+              <input name="title" type="text" id="edittitleInput" value=""/>
+              <label style="margin-top:10px;">Description</label>
+              <input name="description" type="text" id="editdescriptionInput" value=""/>
+              <button style="margin-top:10px;background-color: aquamarine;color:black;" onclick="editTodo()">Update</button>
+            </div>
+          </div>
+    </body>
+</html>
