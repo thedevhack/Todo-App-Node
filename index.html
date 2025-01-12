@@ -40,7 +40,7 @@
             function clearTodosView(){document.getElementById('allTodos').innerHTML="";}
 
             function getAllTodos(){
-                fetch("http://localhost:3000/todos", {method:"GET"}).then((resp) => {
+                fetch("https://todo-app-node-lecv.onrender.com/todos", {method:"GET"}).then((resp) => {
                         resp.json().then((parsedResponse) => {
                             var divElement = document.getElementById('allTodos');
                             parsedResponse.forEach((todo) => {
@@ -61,7 +61,7 @@
             }
             
             function deleteTodo(todoId){
-                fetch("http://localhost:3000/todos/"+todoId, {method:"DELETE"}).then((resp) => {
+                fetch("https://todo-app-node-lecv.onrender.com/todos/"+todoId, {method:"DELETE"}).then((resp) => {
                         resp.json().then((parsedResponse) => {
                         // console.log(parsedResponse)
                         updateTodos();
@@ -89,7 +89,7 @@
                     }
                 }
 
-                fetch("http://localhost:3000/todos", options).then((resp) => {
+                fetch("https://todo-app-node-lecv.onrender.com/todos", options).then((resp) => {
                     resp.json().then((parsedResponse) => {
                         // console.log(parsedResponse);
                         updateTodos();
@@ -104,7 +104,7 @@
                 var editTodoTitleElement = document.getElementById('edittitleInput')
                 var editTodoDescriptionElement = document.getElementById('editdescriptionInput')
                 
-                fetch("http://localhost:3000/todos/" + todoId, {method:"GET"}).then((response) => {
+                fetch("https://todo-app-node-lecv.onrender.com/todos/" + todoId, {method:"GET"}).then((response) => {
                     response.json().then((parsedResponse) => {
                         // console.log(parsedResponse);
                         updateTodoId.value = todoId;
@@ -123,7 +123,7 @@
                 var updatedTitle = document.getElementById('edittitleInput').value;
                 var updatedDescription = document.getElementById('editdescriptionInput').value;
 
-                fetch("http://localhost:3000/todos/" + updateTodoId, {
+                fetch("https://todo-app-node-lecv.onrender.com/todos/" + updateTodoId, {
                     method: "PUT",
                     body: JSON.stringify({
                         title: updatedTitle,
