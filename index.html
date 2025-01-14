@@ -155,34 +155,59 @@
             }
         </style>
         <script>
+            var baseUrl = window.origin;
+            var totalFrontendTodos = 1;
+            //Deprecated
             function clearTodosView(){document.getElementById('allTodos').innerHTML="";}
 
+            function findTodoIndex(originalIndex){
+                var alltodos = document.getElementById('allTodos').children
+                for (let i=0;i<alltodos.length;i++){
+                    // console.log(parseInt(originalIndex), parseInt(alltodos[i].id))
+                    if (parseInt(originalIndex) === parseInt(alltodos[i].id)){
+                        return i;
+                    }
+                }
+            }
+
             function getAllTodos(){
-                fetch("https://todo-app-node-lecv.onrender.com/todos", {method:"GET"}).then((resp) => {
+                
+                fetch(baseUrl + "/todos", {method:"GET"}).then((resp) => {
                         resp.json().then((parsedResponse) => {
                             var divElement = document.getElementById('allTodos');
                             parsedResponse.forEach((todo) => {
                                 var newTodo = document.createElement("div");
+                                newTodo.id=totalFrontendTodos
+                                newTodo.style="padding-top:15px;"
                                 newTodo.innerHTML=`<lable style='size:10px;'><strong>` + todo.title + `</strong></lable> <p>` + todo.description +` 
-                                                    </p><button class="button-7" onclick="loadTodo(`+ todo.id +`)">Edit</button>
-                                                    <button onclick=deleteTodo(` + todo.id +`) class="button-8">Delete</button>`
+                                                    </p><button class="button-7" onclick="loadTodo(`+ todo.id +`,`+ totalFrontendTodos +`)">Edit</button>
+                                                    <button onclick=deleteTodo(` + todo.id +`,`+ totalFrontendTodos +`) class="button-8">Delete</button><br>`
                                 divElement.appendChild(newTodo);
-                                divElement.appendChild(document.createElement("br"));
+                                totalFrontendTodos++;
                             })
                         })
                     })
                 }
             
+            //Deprecated
             function updateTodos(){
                 clearTodosView();
                 getAllTodos();
             }
             
-            function deleteTodo(todoId){
-                fetch("https://todo-app-node-lecv.onrender.com/todos/"+todoId, {method:"DELETE"}).then((resp) => {
+            function deleteTodo(todoId, todoIndex){
+                fetch(baseUrl + "/todos/"+todoId, {method:"DELETE"}).then((resp) => {
                         resp.json().then((parsedResponse) => {
+                        var todosDiv = document.getElementById('allTodos')
+
+                        var frontendTodoIndex = findTodoIndex(todoIndex);
+                        // console.log(frontendTodoIndex)
+                        todosDiv.removeChild(
+                            todosDiv.children[frontendTodoIndex]
+                        )
+                        
                         // console.log(parsedResponse)
-                        updateTodos();
+                        // updateTodos();
                     })
 
                 })
@@ -207,34 +232,39 @@
                     }
                 }
 
-                fetch("https://todo-app-node-lecv.onrender.com/todos", options).then((resp) => {
+                fetch(baseUrl + "/todos", options).then((resp) => {
                     resp.json().then((parsedResponse) => {
                         // console.log(parsedResponse);
                         // updateTodos();
+                        
                         var divElement = document.getElementById('allTodos');
                         var newTodo = document.createElement("div");
+                        newTodo.id = totalFrontendTodos;
+                        newTodo.style="padding-top:15px;"
                         newTodo.innerHTML=`<lable style='size:10px;'><strong>` + parsedResponse.title + `</strong></lable> <p>` + parsedResponse.description +` 
-                                            </p><button class="button-7" onclick="loadTodo(`+ parsedResponse.id +`)">Edit</button>
-                                            <button onclick=deleteTodo(` + parsedResponse.id +`) class="button-8">Delete</button>`
+                                            </p><button class="button-7" onclick="loadTodo(`+ parsedResponse.id +`,`+ totalFrontendTodos +`)">Edit</button>
+                                            <button onclick=deleteTodo(` + parsedResponse.id +`,`+ totalFrontendTodos +`) class="button-8">Delete</bu tton><br>`
                         divElement.appendChild(newTodo);
-                        divElement.appendChild(document.createElement("br"));
+                        totalFrontendTodos++;
                         todotitleInputBox.value = "";
                         tododescriptionInputBox.value = "";
                     })
                 })
             }
 
-            function loadTodo(todoId){
+            function loadTodo(todoId, originalIndex){
                 var updateTodoId = document.getElementById('editTodoId')
                 var editTodoTitleElement = document.getElementById('edittitleInput')
                 var editTodoDescriptionElement = document.getElementById('editdescriptionInput')
+                var frontendId = document.getElementById('frontendId');
                 
-                fetch("https://todo-app-node-lecv.onrender.com/todos/" + todoId, {method:"GET"}).then((response) => {
+                fetch(baseUrl + "/todos/" + todoId, {method:"GET"}).then((response) => {
                     response.json().then((parsedResponse) => {
                         // console.log(parsedResponse);
                         updateTodoId.value = todoId;
                         editTodoTitleElement.value = parsedResponse.title;
                         editTodoDescriptionElement.value = parsedResponse.description;
+                        frontendId.value = originalIndex;
                         document.getElementById('myModal').style.display='block';
 
                     })
@@ -247,8 +277,10 @@
                 var updateTodoId = document.getElementById('editTodoId').value;
                 var updatedTitle = document.getElementById('edittitleInput').value;
                 var updatedDescription = document.getElementById('editdescriptionInput').value;
+                var frontendId = document.getElementById('frontendId').value;
+                
 
-                fetch("https://todo-app-node-lecv.onrender.com/todos/" + updateTodoId, {
+                fetch(baseUrl + "/todos/" + updateTodoId, {
                     method: "PUT",
                     body: JSON.stringify({
                         title: updatedTitle,
@@ -260,8 +292,24 @@
                 }).then((response) => {
                     response.json().then((parsedResponse) => {
                         document.getElementById('myModal').style.display='none';
+                        var todosDiv = document.getElementById('allTodos')
+                        // console.log(originalIndex)
+                        var frontendTodoIndex = findTodoIndex(frontendId);
+                        // console.log(frontendTodoIndex)
+                        
+                        var todoNode = todosDiv.children[frontendTodoIndex]
+
+                        // console.log(todoNode)
+
+                        var titleNode = todoNode.children[0]
+                        titleNode.innerHTML = updatedTitle;
+
+                        var descriptionNode = todoNode.children[1]
+                        descriptionNode.innerHTML = updatedDescription;
+
+
                         // console.log(response);
-                        updateTodos();
+                        // updateTodos();
                     })
                 })
             }
@@ -279,7 +327,7 @@
                 <input name="description" type="text" id="descriptionInput"/>
                 <button style="margin-top:10px;" class="button-9" onclick="addTodo()">Add Todo</button>
         </div>
-        <div style="padding-top: 20px;">
+        <div style="padding-top: 20px; text-align: center;">
             <h1>Todos</h1>
             <div id="allTodos">
                 
@@ -291,6 +339,7 @@
               <span onclick="document.getElementById('myModal').style.display='none'" class="close">&times;</span>
               <p style="text-align: center;">Edit Todo</p>
               <input type="hidden" id="editTodoId" value="-1"/>
+              <input type="hidden" id="frontendId" value="-1"/>
               <label style="margin-top:10px;">Title</label>
               <input name="title" type="text" id="edittitleInput" value=""/>
               <label style="margin-top:10px;">Description</label>
