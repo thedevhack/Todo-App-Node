@@ -35,6 +35,124 @@
                 text-decoration: none;
                 cursor: pointer;
             }
+            .button-7 {
+                background-color: #0095ff;
+                border: 1px solid transparent;
+                border-radius: 3px;
+                box-shadow: rgba(255, 255, 255, .4) 0 1px 0 0 inset;
+                box-sizing: border-box;
+                color: #fff;
+                cursor: pointer;
+                display: inline-block;
+                font-family: -apple-system,system-ui,"Segoe UI","Liberation Sans",sans-serif;
+                font-size: 13px;
+                font-weight: 400;
+                line-height: 1.15385;
+                margin: 0;
+                outline: none;
+                padding: 8px .8em;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+                vertical-align: baseline;
+                white-space: nowrap;
+            }
+
+            .button-7:hover,
+            .button-7:focus {
+                background-color: #07c;
+            }
+
+            .button-7:focus {
+                box-shadow: 0 0 0 4px rgba(0, 149, 255, .15);
+            }
+
+            .button-7:active {
+                background-color: #0064bd;
+                box-shadow: none;
+            }
+
+            .button-8 {
+                background-color: #ef0000;
+                border: 1px solid transparent;
+                border-radius: 3px;
+                box-shadow: rgba(255, 255, 255, .4) 0 1px 0 0 inset;
+                box-sizing: border-box;
+                color: #fff;
+                cursor: pointer;
+                display: inline-block;
+                font-family: -apple-system,system-ui,"Segoe UI","Liberation Sans",sans-serif;
+                font-size: 13px;
+                font-weight: 400;
+                line-height: 1.15385;
+                margin: 0;
+                outline: none;
+                padding: 8px .8em;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+                vertical-align: baseline;
+                white-space: nowrap;
+            }
+
+            .button-8:hover,
+            .button-8:focus {
+                background-color: #c00;
+            }
+
+            .button-8:focus {
+                box-shadow: 0 0 0 4px rgba(0, 149, 255, .15);
+            }
+
+            .button-8:active {
+                background-color: #ff0000;
+                box-shadow: none;
+            }
+            .button-9 {
+                background-color: #60df1c;
+                border: 1px solid transparent;
+                border-radius: 3px;
+                box-shadow: rgba(255, 255, 255, .4) 0 1px 0 0 inset;
+                box-sizing: border-box;
+                color: #fff;
+                cursor: pointer;
+                display: inline-block;
+                font-family: -apple-system,system-ui,"Segoe UI","Liberation Sans",sans-serif;
+                font-size: 13px;
+                font-weight: 400;
+                line-height: 1.15385;
+                margin: 0;
+                outline: none;
+                padding: 8px .8em;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+                vertical-align: baseline;
+                white-space: nowrap;
+            }
+
+            .button-9:hover,
+            .button-9:focus {
+                background-color: rgb(0, 204, 44);
+            }
+
+            .button-9:focus {
+                box-shadow: 0 0 0 4px rgba(0, 149, 255, .15);
+            }
+
+            .button-9:active {
+                background-color: #04ff00;
+                box-shadow: none;
+            }
         </style>
         <script>
             function clearTodosView(){document.getElementById('allTodos').innerHTML="";}
@@ -46,8 +164,8 @@
                             parsedResponse.forEach((todo) => {
                                 var newTodo = document.createElement("div");
                                 newTodo.innerHTML=`<lable style='size:10px;'><strong>` + todo.title + `</strong></lable> <p>` + todo.description +` 
-                                                    </p><button style="margin-top:10px;background-color: blue;color:white;" onclick="loadTodo(`+ todo.id +`)">Edit</button>
-                                                    <button onclick=deleteTodo(` + todo.id +`) style="margin-top:10px;background-color: red;color:white;">Delete</button>`
+                                                    </p><button class="button-7" onclick="loadTodo(`+ todo.id +`)">Edit</button>
+                                                    <button onclick=deleteTodo(` + todo.id +`) class="button-8">Delete</button>`
                                 divElement.appendChild(newTodo);
                                 divElement.appendChild(document.createElement("br"));
                             })
@@ -92,7 +210,14 @@
                 fetch("http://localhost:3000/todos", options).then((resp) => {
                     resp.json().then((parsedResponse) => {
                         // console.log(parsedResponse);
-                        updateTodos();
+                        // updateTodos();
+                        var divElement = document.getElementById('allTodos');
+                        var newTodo = document.createElement("div");
+                        newTodo.innerHTML=`<lable style='size:10px;'><strong>` + parsedResponse.title + `</strong></lable> <p>` + parsedResponse.description +` 
+                                            </p><button class="button-7" onclick="loadTodo(`+ parsedResponse.id +`)">Edit</button>
+                                            <button onclick=deleteTodo(` + parsedResponse.id +`) class="button-8">Delete</button>`
+                        divElement.appendChild(newTodo);
+                        divElement.appendChild(document.createElement("br"));
                         todotitleInputBox.value = "";
                         tododescriptionInputBox.value = "";
                     })
@@ -147,12 +272,12 @@
         </script>
     </head>
     <body>
-        <div style="padding: 5px;display: flex;width: fit-content;flex-direction: column;margin: 5px;/* align-content: center; */">
+        <div style="width:100%;align-items:center; padding: 5px;display: flex;flex-direction: column;margin: 5px;/* align-content: center; */">
                 <label style="margin-top:10px;">Title</label>
                 <input name="title" type="text" id="titleInput"/>
                 <label style="margin-top:10px;">Description</label>
                 <input name="description" type="text" id="descriptionInput"/>
-                <button style="margin-top:10px;background-color: aquamarine;color:black;" onclick="addTodo()">Add Todo</button>
+                <button style="margin-top:10px;" class="button-9" onclick="addTodo()">Add Todo</button>
         </div>
         <div style="padding-top: 20px;">
             <h1>Todos</h1>
@@ -170,7 +295,7 @@
               <input name="title" type="text" id="edittitleInput" value=""/>
               <label style="margin-top:10px;">Description</label>
               <input name="description" type="text" id="editdescriptionInput" value=""/>
-              <button style="margin-top:10px;background-color: aquamarine;color:black;" onclick="editTodo()">Update</button>
+              <button style="margin-top:10px;" class="button-9" onclick="editTodo()">Update</button>
             </div>
           </div>
     </body>

@@ -82,7 +82,12 @@ function addTodo(req, res){
         // console.log("pop")
         fs.writeFile("todos.json", JSON.stringify(todos), () => {})
         fs.writeFile("counter.txt", JSON.stringify(totalTodos), () => {})
-        res.status(201).send({id:totalTodos})
+        res.status(201).send({
+          id:totalTodos,
+          title: req.body.title,
+          description: req.body.description,
+          completed: (req.body.completed) ? req.body.completed : false
+        })
       }
     });
   });
